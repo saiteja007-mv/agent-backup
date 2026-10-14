@@ -1,4 +1,4 @@
-# agentvault
+# agent-backup
 
 Encrypted backups of your AI agent setups and home servers, and a restore that puts them back on
 a new machine, including across Windows, macOS and Linux.
@@ -36,7 +36,7 @@ npx agent-backup scan
 ## Requirements
 
 - Node.js 18.17 or newer
-- restic 0.16+ and rclone (`agentvault enroll --apply` installs them with winget, apt/dnf or brew)
+- restic 0.16+ and rclone (`agent-backup enroll --apply` installs them with winget, apt/dnf or brew)
 - Optional: `sqlite3` (consistent SQLite copies), Docker, Tailscale
 
 ## Quick start
@@ -48,7 +48,7 @@ npx agent-backup enroll --apply  # do it
 ```
 
 `enroll --apply` asks where backups go, installs the tools, connects Google Drive if you chose it
-(you sign in in a browser; access is limited to files agentvault creates), asks for a backup
+(you sign in in a browser; access is limited to files agent-backup creates), asks for a backup
 password, creates the repository, schedules the nightly backup and monthly test, and runs the
 first backup.
 
@@ -65,9 +65,9 @@ Where should backups go?
 
 | Choice | Backups | Copy | Fleet list |
 |---|---|---|---|
-| `local` | `~/AgentVault-backups/<machine>` (or the folder you type, e.g. an external drive) | none | next to the backups |
-| `gdrive` | `Google Drive: AgentVault/<machine>` | none | `AgentVault/_fleet` on Drive |
-| `both` | local folder | Google Drive, copied after every backup | `AgentVault/_fleet` on Drive |
+| `local` | `~/agent-backups/<machine>` (or the folder you type, e.g. an external drive) | none | next to the backups |
+| `gdrive` | `Google Drive: agent-backup/<machine>` | none | `agent-backup/_fleet` on Drive |
+| `both` | local folder | Google Drive, copied after every backup | `agent-backup/_fleet` on Drive |
 
 Non-interactive: `enroll --apply --storage local|gdrive|both [--path <folder>]`. `--copy-to <restic repo>`
 copies to any restic repository instead of Drive (a NAS, a second disk); `--repo` uses any restic
@@ -83,13 +83,12 @@ backups cannot be read, by you or anyone else. There is no recovery.
 Then, optionally:
 
 ```bash
-agentvault slack set      # paste a Slack incoming-webhook URL (typed hidden)
-agentvault skill install  # teach your AI agents to use agentvault
+agent-backup slack set      # paste a Slack incoming-webhook URL (typed hidden)
+agent-backup skill install  # teach your AI agents to use agent-backup
 ```
 
-The scheduler runs a copy of agentvault kept in `~/.config/agentvault/app/`, so nightly runs never
-depend on `npx` or the network to start. For a permanent command: `npm install -g agent-backup`
-(the command is `agentvault`; `agent-backup` works too).
+The scheduler runs a copy of agent-backup kept in `~/.config/agent-backup/app/`, so nightly runs never
+depend on `npx` or the network to start. For a permanent command: `npm install -g agent-backup`.
 
 On Linux, run `enroll` with `sudo` on a server to include services and system files (`/etc`); timers
 then run as root. As a normal user you get user timers (`loginctl enable-linger` keeps them running
@@ -97,25 +96,25 @@ after logout; enroll tells you if it is needed).
 
 ## Restoring
 
-With no flags, `agentvault restore` asks: which machine, which components, which date, which mode.
+With no flags, `agent-backup restore` asks: which machine, which components, which date, which mode.
 
 ```bash
-agentvault restore --component codex --mode dry-run
-agentvault restore --component codex --date 2026-10-01 --mode in-place
-agentvault restore --from old-laptop --component all --mode scratch --target ./old-laptop-files
+agent-backup restore --component codex --mode dry-run
+agent-backup restore --component codex --date 2026-10-01 --mode in-place
+agent-backup restore --from old-laptop --component all --mode scratch --target ./old-laptop-files
 ```
 
 | Mode | What it does |
 |---|---|
 | `dry-run` | Lists what would be restored, from where to where, and how many files. Changes nothing. |
 | `scratch` | Restores into a separate folder (`--target`). Nothing live is touched. |
-| `in-place` | Puts the files back. Files that would be overwritten are saved to `~/.config/agentvault/before-restore/<time>/`. Files that exist only on the machine (caches, anything excluded) are left alone. |
+| `in-place` | Puts the files back. Files that would be overwritten are saved to `~/.config/agent-backup/before-restore/<time>/`. Files that exist only on the machine (caches, anything excluded) are left alone. |
 
 ### Moving to a new machine
 
 1. `npx agent-backup enroll --apply` on the new machine, with the same password.
-2. `agentvault restore --from <old machine> --component all --mode dry-run`
-3. `agentvault restore --from <old machine> --component all --mode in-place`
+2. `agent-backup restore --from <old machine> --component all --mode dry-run`
+3. `agent-backup restore --from <old machine> --component all --mode in-place`
 4. Do the follow-ups it prints (sign in to each agent again; logins are tied to the machine).
 
 Agent components restore on any OS. Machine components (`system`, `docker-*`, services, custom
@@ -139,17 +138,17 @@ images) that you can reinstall from.
 | `jellyfin`, `navidrome` | Config and database (Jellyfin metadata included, transcodes excluded); needs root | no |
 
 Everything skips `node_modules`, virtualenvs, `__pycache__` and caches. Only components found on the
-machine are backed up. See what is found with `agentvault scan` or `agentvault component list`.
+machine are backed up. See what is found with `agent-backup scan` or `agent-backup component list`.
 
 ### Your own components
 
 ```bash
-agentvault component add notes ~/Documents/notes D:/Work/configs
-agentvault component add router --command "ssh root@192.168.1.1 'sysupgrade -b -'" --file router.tar.gz
-agentvault component disable cursor
-agentvault component set claude exclude=skills/some-big-tool,projects/scratch
-agentvault component set docker-immich consistency=stop
-agentvault component set docker-media includeBinds=/srv/media/config
+agent-backup component add notes ~/Documents/notes D:/Work/configs
+agent-backup component add router --command "ssh root@192.168.1.1 'sysupgrade -b -'" --file router.tar.gz
+agent-backup component disable cursor
+agent-backup component set claude exclude=skills/some-big-tool,projects/scratch
+agent-backup component set docker-immich consistency=stop
+agent-backup component set docker-media includeBinds=/srv/media/config
 ```
 
 `exclude` takes names (`*.log`, `tmp`) or paths relative to the component's folders.
@@ -175,11 +174,11 @@ slack set|test|remove
 skill install [--dir <skills folder>]
 ```
 
-`--home <folder>` uses another config folder than `~/.config/agentvault` (handy for testing).
+`--home <folder>` uses another config folder than `~/.config/agent-backup` (handy for testing).
 
 ## Configuration
 
-Everything lives in `~/.config/agentvault/` on each machine:
+Everything lives in `~/.config/agent-backup/` on each machine:
 
 | File | What |
 |---|---|
@@ -200,7 +199,7 @@ Everything lives in `~/.config/agentvault/` on each machine:
 | `registry` | where each machine writes its status for `fleet` |
 | `schedule.time` | `03:00` (`03:30` on Windows) |
 | `schedule.selftest` | `true`: monthly test restore |
-| `schedule.watchdog` | `false`: set `true` on one always-on machine, then `agentvault schedule install`, for a daily 08:00 fleet check that posts problems to Slack |
+| `schedule.watchdog` | `false`: set `true` on one always-on machine, then `agent-backup schedule install`, for a daily 08:00 fleet check that posts problems to Slack |
 | `schedule.staleHours` | `30`: a machine without a backup for this long counts as stale |
 | `retention` | `{ "daily": 7, "weekly": 4, "monthly": 6 }` |
 | `home` | your home folder; under `sudo`, the invoking user's home |
@@ -214,7 +213,7 @@ Everything lives in `~/.config/agentvault/` on each machine:
 - Backups do contain your secrets (API keys in agent configs, SSH keys, `.env` files). That is
   intended: they are what you need on a new machine. Protect the password accordingly.
 - Google Drive access uses the `drive.file` scope: rclone can only see files it created.
-- Dumps and metadata are staged in `~/.config/agentvault/staging/` (owner-only) and deleted right
+- Dumps and metadata are staged in `~/.config/agent-backup/staging/` (owner-only) and deleted right
   after each component is backed up. Scratch restores may contain secrets; delete them when done.
 
 ## Limits

@@ -1,4 +1,4 @@
-# agentvault design
+# agent-backup design
 
 ## Goals
 
@@ -11,7 +11,7 @@ Non-goals: backing up media libraries, git repositories with remotes, or whole d
 ## Shape
 
 ```
-bin/agentvault.js        argument parsing, dispatch
+bin/agent-backup.js        argument parsing, dispatch
 lib/commands/*.js        one file per command; each exports default (opts, positional) -> exit code
 lib/components/*.js      what to back up: agents, system, services, docker (discovered), custom
 lib/restic.js            restic/rclone wrapper (binary discovery, JSON parsing)
@@ -25,12 +25,12 @@ No npm dependencies. Node 18.17+ (built-in `fetch`, `fs.cpSync`, `node:test`).
 
 ## Storage
 
-- One restic repository per machine: `AgentVault/<machine>` on Google Drive via rclone.
+- One restic repository per machine: `agent-backup/<machine>` on Google Drive via rclone.
   Per-machine repositories keep locks, pruning and failures independent.
 - One snapshot per component per run, tagged `av:1` and `component:<id>`, host = machine name.
   Retention runs with `--group-by host,tags`, so each component keeps its own 7/4/6 history.
 - The fleet registry is one small JSON per machine next to the repositories
-  (`AgentVault/_fleet/<machine>.json`): last run, result, repository location. It holds no secrets.
+  (`agent-backup/_fleet/<machine>.json`): last run, result, repository location. It holds no secrets.
 
 ## Component contract
 
@@ -49,13 +49,13 @@ info?                                  extra metadata saved with the backup (doc
 Entries use logical roots (`home`, `appdata`, `localappdata`, `hermes`, `abs`) so the same entry
 resolves to the right place on the target OS.
 
-Each backup also includes a staging folder with `_agentvault.json` (component id, source OS, source
+Each backup also includes a staging folder with `_agent-backup.json` (component id, source OS, source
 home, resolved entry paths, component info). Restore reads it with `restic dump` before restoring
 anything, so dry-run needs no download of file contents.
 
 ## Backup run
 
-1. Lock (`agentvault.lock`, stale after 6 h or when the PID is gone).
+1. Lock (`agent-backup.lock`, stale after 6 h or when the PID is gone).
 2. Per component: fresh owner-only staging folder, metadata, `pre`, `restic backup` of entries +
    staging, `post`, delete staging. A failing component does not stop the others.
 3. `restic forget` nightly; on Sundays also `--prune` and `check --read-data-subset=5%`.
@@ -77,7 +77,7 @@ anything, so dry-run needs no download of file contents.
 
 ## Scheduling
 
-The scheduler runs `node <config>/app/<version>/bin/agentvault.js <job>`: a copy made at enroll or
+The scheduler runs `node <config>/app/<version>/bin/agent-backup.js <job>`: a copy made at enroll or
 `schedule install`, so a cleared npx cache or no network at 3 a.m. cannot stop a backup. Binaries
 are pinned in `config.json` because schedulers have a short PATH.
 

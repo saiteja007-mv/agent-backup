@@ -29,7 +29,7 @@ test('normHost', () => {
 test('defaults: 7/4/6 retention and one repository per machine', () => {
   const d = defaults('/tmp/av');
   assert.deepEqual(d.retention, { daily: 7, weekly: 4, monthly: 6 });
-  assert.match(d.repository, /^rclone:agentvault-gdrive:AgentVault\/[a-z0-9-]+$/);
+  assert.match(d.repository, /^rclone:agent-backup-gdrive:agent-backup\/[a-z0-9-]+$/);
   assert.equal(d.passwordFile, path.join('/tmp/av', 'password'));
 });
 

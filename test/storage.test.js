@@ -10,14 +10,14 @@ const base = () => ({ host: 'laptop', home: path.resolve('/home/alex') });
 
 test('gdrive: repository and fleet list on Google Drive, no copy', () => {
   const c = applyStorage(base(), 'gdrive');
-  assert.equal(c.repository, 'rclone:agentvault-gdrive:AgentVault/laptop');
-  assert.equal(c.registry, 'rclone:agentvault-gdrive:AgentVault/_fleet');
+  assert.equal(c.repository, 'rclone:agent-backup-gdrive:agent-backup/laptop');
+  assert.equal(c.registry, 'rclone:agent-backup-gdrive:agent-backup/_fleet');
   assert.equal(c.copyTo, null);
 });
 
 test('local: folder under home by default, fleet list next to it, no copy', () => {
   const c = applyStorage(base(), 'local');
-  const root = path.join(path.resolve('/home/alex'), 'AgentVault-backups');
+  const root = path.join(path.resolve('/home/alex'), 'agent-backups');
   assert.equal(c.repository, path.join(root, 'laptop'));
   assert.equal(c.registry, path.join(root, '_fleet'));
   assert.equal(c.copyTo, null);
@@ -26,8 +26,8 @@ test('local: folder under home by default, fleet list next to it, no copy', () =
 test('both: local folder plus a Google Drive copy; fleet list on Drive', () => {
   const c = applyStorage(base(), 'both', path.resolve('/mnt/usb/backups'));
   assert.equal(c.repository, path.join(path.resolve('/mnt/usb/backups'), 'laptop'));
-  assert.equal(c.copyTo, 'rclone:agentvault-gdrive:AgentVault/laptop');
-  assert.equal(c.registry, 'rclone:agentvault-gdrive:AgentVault/_fleet');
+  assert.equal(c.copyTo, 'rclone:agent-backup-gdrive:agent-backup/laptop');
+  assert.equal(c.registry, 'rclone:agent-backup-gdrive:agent-backup/_fleet');
 });
 
 test('coming-soon storage is listed but refused', () => {
@@ -46,16 +46,16 @@ test('restore order: this machine reads local first, then the copy', () => {
 
 test('restore order: another machine reads its off-site copy first', () => {
   const cfg = applyStorage(base(), 'both');
-  const fleet = [{ host: 'old', repository: '/home/x/AgentVault-backups/old', copyTo: 'rclone:agentvault-gdrive:AgentVault/old' }];
-  assert.deepEqual(repoCandidates(cfg, 'old', fleet, {}), ['rclone:agentvault-gdrive:AgentVault/old', '/home/x/AgentVault-backups/old']);
+  const fleet = [{ host: 'old', repository: '/home/x/agent-backups/old', copyTo: 'rclone:agent-backup-gdrive:agent-backup/old' }];
+  assert.deepEqual(repoCandidates(cfg, 'old', fleet, {}), ['rclone:agent-backup-gdrive:agent-backup/old', '/home/x/agent-backups/old']);
   // not in the fleet list: same layout, our name swapped for theirs
   const guessed = repoCandidates(applyStorage(base(), 'gdrive'), 'other', [], {});
-  assert.deepEqual(guessed, ['rclone:agentvault-gdrive:AgentVault/other']);
+  assert.deepEqual(guessed, ['rclone:agent-backup-gdrive:agent-backup/other']);
 });
 
 test('Google remote client detection reads rclone config dump', () => {
-  const dump = JSON.stringify({ 'agentvault-gdrive': { type: 'drive', scope: 'drive.file', token: 'x' }, other: { type: 'drive', client_id: 'abc' } });
-  assert.equal(remoteClientId(dump, 'agentvault-gdrive'), '');
+  const dump = JSON.stringify({ 'agent-backup-gdrive': { type: 'drive', scope: 'drive.file', token: 'x' }, other: { type: 'drive', client_id: 'abc' } });
+  assert.equal(remoteClientId(dump, 'agent-backup-gdrive'), '');
   assert.equal(remoteClientId(dump, 'other'), 'abc');
   assert.equal(remoteClientId('not json', 'other'), '');
 });
