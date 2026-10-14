@@ -16,9 +16,12 @@ const help = (v) => `agentvault ${v}: back up and restore AI agent setups and se
 Start here
   agentvault scan                       what this machine has that can be backed up (changes nothing)
   agentvault enroll                     show the setup plan for this machine (changes nothing)
-  agentvault enroll --apply             do it: tools, Google Drive, password, repository, schedule, first backup
-      [--repo <restic repo>] [--registry <folder|rclone:remote:path>] [--time 03:00]
-      [--no-schedule] [--no-backup] [--password-file <file>] [--yes]
+  agentvault enroll --apply             do it: storage, tools, password, repository, schedule, first backup
+      [--storage local|gdrive|both] [--path <local folder>]   (asked when not given)
+      [--copy-to <restic repo>] [--repo <restic repo>] [--registry <folder|rclone:remote:path>]
+      [--time 03:00] [--no-schedule] [--no-backup] [--password-file <file>] [--yes]
+      storage: local = a folder (default ~/AgentVault-backups), gdrive = Google Drive,
+               both = local folder + a copy on Google Drive. OneDrive and iCloud: coming soon.
 
 Every day
   agentvault backup [--only a,b] [--prune] [--dry-run]
@@ -30,10 +33,12 @@ Every day
 Restore (with no flags it asks: machine, components, date, mode)
   agentvault restore [--from <machine>] [--component <id>[,<id>]|all] [--date YYYY-MM-DD | --snapshot <id>]
       [--mode dry-run|scratch|in-place] [--target <folder>] [--include <restic pattern>] [--yes]
+      [--source local|copy]   (default: local backups, falling back to the copy if they cannot be opened)
 
 Health
-  agentvault check [--full]             verify the repository (5% of the data, or all of it)
-  agentvault selftest [--component <id>]  restore one component to a temp folder and verify it
+  agentvault check [--full]             verify the backups and the copy (5% of the data, or all of it)
+  agentvault selftest [--component <id>] [--source local|copy]
+                                        restore one component to a temp folder and verify it (tests the copy if there is one)
 
 Setup
   agentvault schedule install|remove|show [--time 03:00]

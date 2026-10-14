@@ -6,8 +6,9 @@ description: Back up and restore AI agent setups (Claude Code, Codex, Gemini CLI
 # agentvault
 
 `agentvault` is a CLI (npm package `agent-backup`). Backups are encrypted restic snapshots, one per
-component, usually stored on Google Drive through rclone. Run it as `agentvault <command>` if it is
-installed, otherwise `npx -y agent-backup <command>`.
+component. Each machine stores them in a local folder, on Google Drive, or both (local + a Drive copy);
+`agentvault status` shows which. Run it as `agentvault <command>` if it is installed, otherwise
+`npx -y agent-backup <command>`.
 
 ## Safe to run any time (read-only)
 
@@ -23,8 +24,10 @@ installed, otherwise `npx -y agent-backup <command>`.
 
 ## Ask the user before running
 
-- `agentvault enroll --apply`: installs restic/rclone, opens a Google sign-in, asks for the backup
-  password, creates the repository, installs the nightly schedule. Show `agentvault enroll` (the plan)
+- `agentvault enroll --apply`: asks where backups go (local folder, Google Drive, or both; OneDrive
+  and iCloud are listed as coming soon), installs restic/rclone, opens a Google sign-in if Drive is
+  chosen, asks for the backup password, creates the repository, installs the nightly schedule. Ask the
+  user which storage they want and pass it as `--storage local|gdrive|both` (`--path` for the folder). Show `agentvault enroll` (the plan)
   first. The password and the Google sign-in are the user's to type: run it in a terminal they can
   type into, or give them the command. Never put a password on a command line.
 - `agentvault restore ... --mode in-place --yes`: overwrites live files (every overwritten file is

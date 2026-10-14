@@ -47,9 +47,35 @@ npx agent-backup enroll          # the setup plan for this machine (changes noth
 npx agent-backup enroll --apply  # do it
 ```
 
-`enroll --apply` installs the tools, connects Google Drive (you sign in in a browser; access is
-limited to files agentvault creates), asks for a backup password, creates the repository, schedules
-the nightly backup and monthly test, and runs the first backup.
+`enroll --apply` asks where backups go, installs the tools, connects Google Drive if you chose it
+(you sign in in a browser; access is limited to files agentvault creates), asks for a backup
+password, creates the repository, schedules the nightly backup and monthly test, and runs the
+first backup.
+
+### Where backups go
+
+```
+Where should backups go?
+  1. Local folder                fast; on the same disk it does not survive a dead disk
+  2. Google Drive                off-site, encrypted
+  3. Local + Google Drive copy   fast local restores plus an off-site copy
+  4. OneDrive                    (coming soon)
+  5. iCloud Drive (Mac)          (coming soon)
+```
+
+| Choice | Backups | Copy | Fleet list |
+|---|---|---|---|
+| `local` | `~/AgentVault-backups/<machine>` (or the folder you type, e.g. an external drive) | none | next to the backups |
+| `gdrive` | `Google Drive: AgentVault/<machine>` | none | `AgentVault/_fleet` on Drive |
+| `both` | local folder | Google Drive, copied after every backup | `AgentVault/_fleet` on Drive |
+
+Non-interactive: `enroll --apply --storage local|gdrive|both [--path <folder>]`. `--copy-to <restic repo>`
+copies to any restic repository instead of Drive (a NAS, a second disk); `--repo` uses any restic
+repository as the main one.
+
+With `both`, restores read the local folder and switch to the Drive copy by themselves if the local
+folder cannot be opened. `--source copy` forces the copy. The monthly test restores from the copy,
+since that is the one you need when the disk dies, and the Sunday check covers both.
 
 **Use the same password on every machine and keep it in your password manager.** Without it the
 backups cannot be read, by you or anyone else. There is no recovery.
@@ -168,8 +194,10 @@ Everything lives in `~/.config/agentvault/` on each machine:
 
 | Field | Default |
 |---|---|
-| `repository` | `rclone:agentvault-gdrive:AgentVault/<machine>`. Any restic repository works (local folder, SFTP, S3...). |
-| `registry` | `rclone:agentvault-gdrive:AgentVault/_fleet`. Where each machine writes its status for `fleet`. |
+| `storage` | `local`, `gdrive`, `both`, or `custom` (set by enroll) |
+| `repository` | where backups go, set from `storage`. Any restic repository works (local folder, SFTP, S3...). |
+| `copyTo` | the copy destination with `both` (Google Drive by default), else `null` |
+| `registry` | where each machine writes its status for `fleet` |
 | `schedule.time` | `03:00` (`03:30` on Windows) |
 | `schedule.selftest` | `true`: monthly test restore |
 | `schedule.watchdog` | `false`: set `true` on one always-on machine, then `agentvault schedule install`, for a daily 08:00 fleet check that posts problems to Slack |
