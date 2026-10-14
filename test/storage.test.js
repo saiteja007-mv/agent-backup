@@ -4,6 +4,7 @@ import path from 'node:path';
 import { applyStorage, STORAGE } from '../lib/config.js';
 import { repoCandidates } from '../lib/commands/restore.js';
 import { stateOf } from '../lib/commands/fleet.js';
+import { remoteClientId } from '../lib/google.js';
 
 const base = () => ({ host: 'laptop', home: path.resolve('/home/alex') });
 
@@ -50,6 +51,13 @@ test('restore order: another machine reads its off-site copy first', () => {
   // not in the fleet list: same layout, our name swapped for theirs
   const guessed = repoCandidates(applyStorage(base(), 'gdrive'), 'other', [], {});
   assert.deepEqual(guessed, ['rclone:agentvault-gdrive:AgentVault/other']);
+});
+
+test('Google remote client detection reads rclone config dump', () => {
+  const dump = JSON.stringify({ 'agentvault-gdrive': { type: 'drive', scope: 'drive.file', token: 'x' }, other: { type: 'drive', client_id: 'abc' } });
+  assert.equal(remoteClientId(dump, 'agentvault-gdrive'), '');
+  assert.equal(remoteClientId(dump, 'other'), 'abc');
+  assert.equal(remoteClientId('not json', 'other'), '');
 });
 
 test('fleet flags a failed copy', () => {
