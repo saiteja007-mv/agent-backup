@@ -33,3 +33,11 @@ test('pickSections copies only the named rclone remotes', () => {
   assert.equal(pickSections(conf, ['agent-backup-gdrive']), '[agent-backup-gdrive]\ntype = drive\nscope = drive.file\ntoken = x\n');
   assert.equal(pickSections(conf, ['absent']), '');
 });
+
+test('setSection replaces one rclone remote and keeps the others', async () => {
+  const { setSection } = await import('../lib/config.js');
+  const conf = '[mine]\ntype = s3\n\n[agent-backup-gdrive]\ntype = drive\nscope = drive.file\n';
+  const out = setSection(conf, 'agent-backup-gdrive', { type: 'drive', client_id: 'x', client_secret: '', scope: 'drive.file', token: '{"a":1}' });
+  assert.equal(out, '[mine]\ntype = s3\n\n[agent-backup-gdrive]\ntype = drive\nclient_id = x\nscope = drive.file\ntoken = {"a":1}\n');
+  assert.equal(setSection('', 'r', { type: 'drive' }), '[r]\ntype = drive\n');
+});

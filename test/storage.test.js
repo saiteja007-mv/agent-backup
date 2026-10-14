@@ -4,7 +4,7 @@ import path from 'node:path';
 import { applyStorage, STORAGE } from '../lib/config.js';
 import { repoCandidates } from '../lib/commands/restore.js';
 import { stateOf } from '../lib/commands/fleet.js';
-import { remoteClientId } from '../lib/google.js';
+import { remoteState, GOOGLE_CLIENT } from '../lib/google.js';
 
 const base = () => ({ host: 'laptop', home: path.resolve('/home/alex') });
 
@@ -53,11 +53,17 @@ test('restore order: another machine reads its off-site copy first', () => {
   assert.deepEqual(guessed, ['rclone:agent-backup-gdrive:agent-backup/other']);
 });
 
-test('Google remote client detection reads rclone config dump', () => {
-  const dump = JSON.stringify({ 'agent-backup-gdrive': { type: 'drive', scope: 'drive.file', token: 'x' }, other: { type: 'drive', client_id: 'abc' } });
-  assert.equal(remoteClientId(dump, 'agent-backup-gdrive'), '');
-  assert.equal(remoteClientId(dump, 'other'), 'abc');
-  assert.equal(remoteClientId('not json', 'other'), '');
+test('Drive remote state: missing, sign-in never finished, old shared client, ok', () => {
+  const dump = JSON.stringify({
+    'no-token': { type: 'drive', scope: 'drive.file', client_id: GOOGLE_CLIENT.id },
+    shared: { type: 'drive', token: '{}' },
+    good: { type: 'drive', token: '{}', client_id: GOOGLE_CLIENT.id },
+  });
+  assert.equal(remoteState(dump, 'absent'), 'missing');
+  assert.equal(remoteState(dump, 'no-token'), 'no-token');
+  assert.equal(remoteState(dump, 'shared'), 'other-client');
+  assert.equal(remoteState(dump, 'good'), 'ok');
+  assert.equal(remoteState('not json', 'good'), 'missing');
 });
 
 test('fleet flags a failed copy', () => {
