@@ -184,6 +184,34 @@ folders) restore in place only onto the same OS; use `scratch` to get their file
 `system` component keeps lists of installed packages (winget, apt, brew, npm -g, uv, pipx, Docker
 images) that you can reinstall from.
 
+## Back up more devices
+
+Every device signed in to the same Google account backs up into its own folder in the same Drive:
+
+```
+Google Drive / agent-backup /
+    laptop/      encrypted backups of laptop
+    desktop/     encrypted backups of desktop
+    homelab/     encrypted backups of homelab
+    _fleet/      one small status file per device
+```
+
+To add a device, run `npx agent-backup enroll --apply` on it and choose the same storage:
+
+- **Sign in with the same Google account.** Each device gets its own sign-in, which you can revoke on
+  its own. A server without a browser shows a prompt: on any computer that has a browser, run
+  `npx agent-backup authorize`, sign in, and paste what it prints into the server.
+- **Use the same password.** When other devices are already there, enroll only accepts the password
+  that opens their backups, so one password restores any device.
+- **Device names are unique.** Each device is named after its hostname (`--name <name>` sets another).
+  If that name is already in the Drive, enroll asks whether this is the same machine, for example
+  after a reinstall (then it continues that device's backups), or a different one (then you pick a
+  new name). Without a terminal, pass `--same-machine` or `--name`.
+
+`agent-backup fleet` lists every device and its last backup, and `agent-backup restore --from <device>`
+restores any of them onto the machine you are on. The same works without Google Drive when several
+devices use one shared local folder (a NAS or a mounted drive) with `--storage local --path <folder>`.
+
 ## Components
 
 | id | What | Restores across OSes |
@@ -234,6 +262,7 @@ schedule install|remove|show [--time 03:00]
 component list|enable|disable|add|remove|set
 slack set|test|remove
 skill install [--dir <skills folder>]
+authorize                        Google sign-in code for a device without a browser
 ```
 
 `--home <folder>` uses another config folder than `~/.config/agent-backup` (handy for testing).
