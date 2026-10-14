@@ -21,8 +21,8 @@ test('resolveEntry re-roots home entries on the target machine', () => {
 });
 
 test('normHost', () => {
-  assert.equal(normHost('BOBBY'), 'bobby');
-  assert.equal(normHost('ideapad.tail1234.ts.net'), 'ideapad');
+  assert.equal(normHost('LAPTOP'), 'laptop');
+  assert.equal(normHost('server.tail1234.ts.net'), 'server');
   assert.equal(normHost('My Laptop_2'), 'my-laptop-2');
 });
 

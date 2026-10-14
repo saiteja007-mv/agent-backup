@@ -51,7 +51,7 @@ Setup
   agent-backup authorize              Google sign-in code for a device without a browser (run where you have one)
 
 Global: --home <folder> uses another config folder (default ~/.config/agent-backup).
-Docs: https://www.npmjs.com/package/agent-backup`;
+Docs: https://github.com/saiteja007-mv/agent-backup`;
 
 async function main() {
   const { cmd, pos, opts } = parseArgs(process.argv.slice(2), BOOLS);

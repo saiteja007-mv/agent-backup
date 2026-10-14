@@ -46,8 +46,8 @@ test('hostPath turns Docker Desktop bind sources back into drive paths', () => {
 });
 
 test('fleet: tailnet devices and backup state', () => {
-  const d = tailnetDevices({ Self: { HostName: 'BOBBY', OS: 'windows' }, Peer: { k: { HostName: 'ideapad', OS: 'linux', Online: false } } });
-  assert.deepEqual(d.map((x) => [x.host, x.online, x.self]), [['bobby', true, true], ['ideapad', false, false]]);
+  const d = tailnetDevices({ Self: { HostName: 'LAPTOP', OS: 'windows' }, Peer: { k: { HostName: 'server', OS: 'linux', Online: false } } });
+  assert.deepEqual(d.map((x) => [x.host, x.online, x.self]), [['laptop', true, true], ['server', false, false]]);
   const now = Date.parse('2026-10-13T12:00:00Z');
   assert.equal(stateOf({ time: '2026-10-13T03:00:00Z', ok: true }, now, 30), 'ok');
   assert.equal(stateOf({ time: '2026-10-11T03:00:00Z', ok: true }, now, 30), 'STALE');
