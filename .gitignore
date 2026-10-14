@@ -5,3 +5,4 @@ node_modules/
 agent-backup-restore-*/
 google-client.json
 lib/google-client.json
+lib/google-device-client.json

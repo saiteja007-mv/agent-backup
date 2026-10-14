@@ -3,7 +3,6 @@ import assert from 'node:assert/strict';
 import path from 'node:path';
 import { renameDevice, resolveName, passwordVerdict } from '../lib/devices.js';
 import { applyStorage } from '../lib/config.js';
-import { authorizeBlob, GOOGLE_CLIENT } from '../lib/google.js';
 
 const base = () => ({ host: 'laptop', home: path.resolve('/home/alex') });
 
@@ -29,10 +28,3 @@ test('password check tells a wrong password from an unreachable repository', () 
   assert.equal(passwordVerdict({ ok: false, stderr: 'Fatal: unable to open repository: no such host' }), 'unreachable');
 });
 
-test('authorize code: agent-backup client, drive.file only, URL-safe base64 without padding', () => {
-  const blob = authorizeBlob();
-  assert.match(blob, /^[A-Za-z0-9_-]+$/);
-  const j = JSON.parse(Buffer.from(blob, 'base64url').toString('utf8'));
-  assert.equal(j.client_id, GOOGLE_CLIENT.id);
-  assert.equal(j.scope, 'drive.file');
-});

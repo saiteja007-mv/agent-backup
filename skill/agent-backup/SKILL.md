@@ -56,9 +56,10 @@ component. Each machine stores them in a local folder, on Google Drive, or both 
 
 **Add another device to the same Google account**
 `npx -y agent-backup enroll --apply` on that device, same storage choice, same Google account, same
-password (enroll rejects a different one). On a server without a browser, the user runs
-`npx agent-backup authorize` on a computer that has one and pastes the result. If the device name is
-already taken, ask the user whether it is the same machine (`--same-machine`) or pick `--name <name>`.
+password (enroll rejects a different one). On a server without a browser, enroll prints a short code:
+the user opens google.com/device on any phone or computer, enters it and signs in; enroll waits and
+continues by itself. If the device name is already taken, ask the user whether it is the same machine
+(`--same-machine`) or pick `--name <name>`.
 
 **"Is my backup working?"** `agent-backup status`; for a machine-wide view `agent-backup fleet`.
 A failed or stale machine is also posted to Slack when the watchdog is on.

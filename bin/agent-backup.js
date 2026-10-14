@@ -8,8 +8,8 @@ if (major < 18 || (major === 18 && minor < 17)) {
   process.exit(1);
 }
 
-const COMMANDS = ['scan', 'enroll', 'backup', 'status', 'restore', 'fleet', 'check', 'diff', 'selftest', 'schedule', 'component', 'slack', 'skill', 'authorize'];
-const BOOLS = new Set(['apply', 'yes', 'scheduled', 'prune', 'dry-run', 'alert', 'full', 'no-schedule', 'no-backup', 'same-machine', 'help', 'version']);
+const COMMANDS = ['scan', 'enroll', 'backup', 'status', 'restore', 'fleet', 'check', 'diff', 'selftest', 'schedule', 'component', 'slack', 'skill'];
+const BOOLS = new Set(['apply', 'yes', 'scheduled', 'prune', 'dry-run', 'alert', 'full', 'no-schedule', 'no-backup', 'same-machine', 'no-browser', 'help', 'version']);
 
 const help = (v) => `agent-backup ${v}: back up and restore AI agent setups and server configs
 
@@ -19,7 +19,7 @@ Start here
   agent-backup enroll --apply             do it: storage, tools, password, repository, schedule, first backup
       [--storage local|gdrive|both] [--path <local folder>]   (asked when not given)
       [--copy-to <restic repo>] [--repo <restic repo>] [--registry <folder|rclone:remote:path>]
-      [--name <device>] [--same-machine] [--time 03:00] [--no-schedule] [--no-backup] [--password-file <file>] [--yes]
+      [--name <device>] [--same-machine] [--no-browser] [--time 03:00] [--no-schedule] [--no-backup] [--password-file <file>] [--yes]
       storage: local = a folder (default ~/agent-backups), gdrive = Google Drive,
                both = local folder + a copy on Google Drive. OneDrive and iCloud: coming soon.
 
@@ -48,7 +48,6 @@ Setup
   agent-backup component set <id> key=value...   (consistency=stop|live, includeBinds=/a,/b, exclude=x,y)
   agent-backup slack set|test|remove
   agent-backup skill install [--dir <skills folder>]
-  agent-backup authorize              Google sign-in code for a device without a browser (run where you have one)
 
 Global: --home <folder> uses another config folder (default ~/.config/agent-backup).
 Docs: https://github.com/saiteja007-mv/agent-backup`;

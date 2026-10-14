@@ -201,8 +201,9 @@ Google Drive / agent-backup /
 To add a device, run `npx agent-backup enroll --apply` on it and choose the same storage:
 
 - **Sign in with the same Google account.** Each device gets its own sign-in, which you can revoke on
-  its own. A server without a browser shows a prompt: on any computer that has a browser, run
-  `npx agent-backup authorize`, sign in, and paste what it prints into the server.
+  its own. A machine without a browser (a server over SSH) shows a short code: open
+  google.com/device on your phone or any computer, enter the code, and sign in. Nothing to copy or
+  paste. `--no-browser` uses this sign-in on any machine, for example a Mac reached over SSH.
 - **Use the same password.** When other devices are already there, enroll only accepts the password
   that opens their backups, so one password restores any device.
 - **Device names are unique.** Each device is named after its hostname (`--name <name>` sets another).
@@ -264,7 +265,6 @@ schedule install|remove|show [--time 03:00]
 component list|enable|disable|add|remove|set
 slack set|test|remove
 skill install [--dir <skills folder>]
-authorize                        Google sign-in code for a device without a browser
 ```
 
 `--home <folder>` uses another config folder than `~/.config/agent-backup` (handy for testing).
