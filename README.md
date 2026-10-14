@@ -1,11 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/saiteja007-mv/agent-backup/main/docs/hero.png" alt="agent-backup" width="100%">
-</p>
-
-<h1 align="center">agent-backup</h1>
-
-<p align="center">
-  Encrypted backups of your AI agents and home servers. Put them back on any machine.
+  <img src="https://raw.githubusercontent.com/saiteja007-mv/agent-backup/main/docs/hero.png" alt="Agent Backup: back up and restore agent configs, skills, MCPs and multi-device setups" width="100%">
 </p>
 
 <p align="center">

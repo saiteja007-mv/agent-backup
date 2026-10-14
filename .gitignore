@@ -4,3 +4,4 @@ node_modules/
 .env
 agent-backup-restore-*/
 google-client.json
+lib/google-client.json
