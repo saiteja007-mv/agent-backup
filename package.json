@@ -1,10 +1,11 @@
 {
-  "name": "agentvault-cli",
+  "name": "agent-backup",
   "version": "0.1.0",
   "description": "Back up and restore AI agent setups (Claude Code, Codex, Gemini, opencode, Cursor, Hermes) and home-server apps with restic. Encrypted, per-component snapshots, pick-and-choose restore, cross-OS agent restore.",
   "type": "module",
   "bin": {
-    "agentvault": "bin/agentvault.js"
+    "agentvault": "bin/agentvault.js",
+    "agent-backup": "bin/agentvault.js"
   },
   "files": [
     "bin",

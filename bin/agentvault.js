@@ -45,7 +45,7 @@ Setup
   agentvault skill install [--dir <skills folder>]
 
 Global: --home <folder> uses another config folder (default ~/.config/agentvault).
-Docs: https://www.npmjs.com/package/agentvault-cli`;
+Docs: https://www.npmjs.com/package/agent-backup`;
 
 async function main() {
   const { cmd, pos, opts } = parseArgs(process.argv.slice(2), BOOLS);

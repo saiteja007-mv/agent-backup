@@ -5,9 +5,9 @@ description: Back up and restore AI agent setups (Claude Code, Codex, Gemini CLI
 
 # agentvault
 
-`agentvault` is a CLI (npm package `agentvault-cli`). Backups are encrypted restic snapshots, one per
+`agentvault` is a CLI (npm package `agent-backup`). Backups are encrypted restic snapshots, one per
 component, usually stored on Google Drive through rclone. Run it as `agentvault <command>` if it is
-installed, otherwise `npx -y agentvault-cli <command>`.
+installed, otherwise `npx -y agent-backup <command>`.
 
 ## Safe to run any time (read-only)
 
@@ -43,7 +43,7 @@ installed, otherwise `npx -y agentvault-cli <command>`.
 ## Common flows
 
 **New machine, same agents as before**
-1. `npx -y agentvault-cli enroll` (show the plan), then the user runs `npx -y agentvault-cli enroll --apply`
+1. `npx -y agent-backup enroll` (show the plan), then the user runs `npx -y agent-backup enroll --apply`
    with the SAME password as their other machines.
 2. `agentvault restore --from <old-machine> --component all --mode dry-run`, show it.
 3. After a yes: the same command with `--mode in-place --yes`. Agent configs restore across

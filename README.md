@@ -12,7 +12,7 @@ Under the hood it is a thin, careful wrapper around [restic](https://restic.net)
 deduplication, snapshots) and [rclone](https://rclone.org) (Google Drive). No other dependencies.
 
 ```bash
-npx agentvault-cli scan
+npx agent-backup scan
 ```
 
 ## What you get
@@ -42,9 +42,9 @@ npx agentvault-cli scan
 ## Quick start
 
 ```bash
-npx agentvault-cli scan            # what is here, how big (changes nothing)
-npx agentvault-cli enroll          # the setup plan for this machine (changes nothing)
-npx agentvault-cli enroll --apply  # do it
+npx agent-backup scan            # what is here, how big (changes nothing)
+npx agent-backup enroll          # the setup plan for this machine (changes nothing)
+npx agent-backup enroll --apply  # do it
 ```
 
 `enroll --apply` installs the tools, connects Google Drive (you sign in in a browser; access is
@@ -62,7 +62,8 @@ agentvault skill install  # teach your AI agents to use agentvault
 ```
 
 The scheduler runs a copy of agentvault kept in `~/.config/agentvault/app/`, so nightly runs never
-depend on `npx` or the network to start. For a permanent command: `npm install -g agentvault-cli`.
+depend on `npx` or the network to start. For a permanent command: `npm install -g agent-backup`
+(the command is `agentvault`; `agent-backup` works too).
 
 On Linux, run `enroll` with `sudo` on a server to include services and system files (`/etc`); timers
 then run as root. As a normal user you get user timers (`loginctl enable-linger` keeps them running
@@ -86,7 +87,7 @@ agentvault restore --from old-laptop --component all --mode scratch --target ./o
 
 ### Moving to a new machine
 
-1. `npx agentvault-cli enroll --apply` on the new machine, with the same password.
+1. `npx agent-backup enroll --apply` on the new machine, with the same password.
 2. `agentvault restore --from <old machine> --component all --mode dry-run`
 3. `agentvault restore --from <old machine> --component all --mode in-place`
 4. Do the follow-ups it prints (sign in to each agent again; logins are tied to the machine).
