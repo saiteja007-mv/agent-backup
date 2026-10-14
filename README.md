@@ -33,11 +33,76 @@ npx agent-backup scan
 - **Slack message after every run** (optional).
 - **An agent skill**, so Claude Code, Codex and others can check and run backups for you safely.
 
-## Requirements
+## Install
 
-- Node.js 18.17 or newer
-- restic 0.16+ and rclone (`agent-backup enroll --apply` installs them with winget, apt/dnf or brew)
-- Optional: `sqlite3` (consistent SQLite copies), Docker, Tailscale
+agent-backup needs **[Node.js](https://nodejs.org) 18.17 or newer**. It drives two free tools:
+**restic** 0.16 or newer, and **rclone** (only needed for Google Drive). `agent-backup enroll --apply`
+installs both for you, or you can install them yourself (below).
+
+### Run it without installing
+
+```bash
+npx agent-backup scan
+```
+
+npx fetches the latest version each time. Nightly backups never depend on npx: enroll keeps its own
+copy of agent-backup in `~/.config/agent-backup/app/` for the scheduler.
+
+### Install the command
+
+```bash
+npm install -g agent-backup
+```
+
+Check it with `agent-backup --version`. On Linux, if npm installs global packages into a system
+folder, use `sudo npm install -g agent-backup`. The examples below use `agent-backup`; without a
+global install, put `npx` in front.
+
+### Install restic and rclone yourself (optional)
+
+| System | Command |
+|---|---|
+| Windows | `winget install -e --id restic.restic` and `winget install -e --id Rclone.Rclone` |
+| macOS | `brew install restic rclone` |
+| Ubuntu 24.04 or newer | `sudo apt install restic rclone` |
+| Fedora | `sudo dnf install restic rclone` |
+
+Older releases such as Ubuntu 22.04 and Debian 12 ship a restic older than 0.16. There, download
+restic from [its releases page](https://github.com/restic/restic/releases) instead. Check with
+`restic version`.
+
+Optional extras: `sqlite3` for consistent copies of SQLite databases (`winget install -e --id
+SQLite.SQLite`, or `sqlite3` from brew/apt/dnf), Docker for Compose stacks, Tailscale for the fleet view.
+
+### Let your AI agents use it
+
+```bash
+agent-backup skill install
+```
+
+Copies the agent-backup skill to `~/.agents/skills` if you have a shared skills folder, otherwise to
+Claude Code (and Codex). Agents can then check backups and run them for you safely.
+
+### Update
+
+```bash
+npm install -g agent-backup@latest
+agent-backup schedule install
+```
+
+The second command points the nightly job at the new version.
+
+### Uninstall
+
+```bash
+agent-backup schedule remove
+npm uninstall -g agent-backup
+```
+
+Your backups stay where they are (local folder or Google Drive). Settings, the password and the
+Google Drive sign-in are in `~/.config/agent-backup`. Copy the password to your password manager
+before you delete that folder. To withdraw Drive access, remove **agent-backup** under Google
+Account > Security > Third-party apps and services.
 
 ## Quick start
 
@@ -86,9 +151,6 @@ Then, optionally:
 agent-backup slack set      # paste a Slack incoming-webhook URL (typed hidden)
 agent-backup skill install  # teach your AI agents to use agent-backup
 ```
-
-The scheduler runs a copy of agent-backup kept in `~/.config/agent-backup/app/`, so nightly runs never
-depend on `npx` or the network to start. For a permanent command: `npm install -g agent-backup`.
 
 On Linux, run `enroll` with `sudo` on a server to include services and system files (`/etc`); timers
 then run as root. As a normal user you get user timers (`loginctl enable-linger` keeps them running
